@@ -56,7 +56,7 @@ gc-content-analyzer/
 ├── requirements.txt          # Python dependencies
 ├── .pre-commit-config.yaml   # Git hooks & linters
 └── README.md                 # This file
-
+ ```
 ---
 
 ## Getting Started
