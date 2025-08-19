@@ -1,31 +1,54 @@
-# app.py
-
-import sys
 import os
-from Bio import Entrez, SeqIO
-import streamlit as st
+import sys
 
-# ensure gc_analysis.py is in the import path
+import pandas as pd
+import streamlit as st
+from Bio import Entrez, SeqIO
+
+# Add gc_analysis.py to import path
 sys.path.insert(0, os.path.abspath("."))
 from gc_analysis import run_analysis
 
-st.set_page_config(layout="wide")
-st.title("Genome GC Content Analyzer 🧬")
+# ───────────────────────────────────────────────────────────────
+# Page Setup
+st.set_page_config(page_title="GC Content Analyzer", layout="wide")
 
+# ───────────────────────────────────────────────────────────────
+# Sidebar Guide
+st.sidebar.markdown(
+    """
+## 🧭 How to Use This App
+
+1. Upload your own genome files **or** enter an NCBI accession
+2. Click **Run Analysis** to process your data
+3. View GC content plots and tables
+4. Download results for further exploration
+
+Supported formats: `.fna`, `.gbff`, `.faa`
+"""
+)
+
+# ───────────────────────────────────────────────────────────────
+# Welcome Message
+st.markdown(
+    """
+# 🧬 GC Content Analyzer
+
+GC content — the proportion of guanine (G) and cytosine (C) bases in DNA — is a key metric in genomics.
+It affects gene expression, DNA stability, and evolutionary patterns.
+This tool helps you explore GC content and amino acid composition across sequences from your own files or directly from NCBI.
+"""
+)
+
+
+# ───────────────────────────────────────────────────────────────
+# NCBI Download Function
 def download_ncbi(accession: str, email: str):
-    """
-    Given an NCBI accession (nucleotide or assembly) and user email,
-    fetch genome FASTA, GenBank (with translations), extract proteins,
-    and return the three temp file paths.
-    """
     Entrez.email = email
-
-    # decide which fetch flow to use
     acc = accession.strip()
     prefix = acc.split("_", 1)[0].upper()
 
     if prefix in ("NC", "NM", "MT"):
-        # --- direct nuccore fetch ---
         fna_records = Entrez.efetch(
             db="nuccore", id=acc, rettype="fasta", retmode="text"
         ).read()
@@ -35,35 +58,24 @@ def download_ncbi(accession: str, email: str):
         nuccore_ids = [acc]
 
     elif prefix in ("GCF", "GCA"):
-        # --- assembly → nuccore workflow ---
-        # 1. find assembly UID
-        search_handle = Entrez.esearch(
-            db="assembly", term=acc, retmode="xml"
+        search_results = Entrez.read(
+            Entrez.esearch(db="assembly", term=acc, retmode="xml")
         )
-        search_results = Entrez.read(search_handle)
-        search_handle.close()
-
         uids = search_results.get("IdList", [])
         if not uids:
-            raise ValueError(f"Assembly accession '{acc}' not found in NCBI.")
+            raise ValueError(f"Assembly accession '{acc}' not found.")
         asm_uid = uids[0]
 
-        # 2. link assembly → nuccore IDs
-        link_handle = Entrez.elink(
-            dbfrom="assembly",
-            db="nuccore",
-            id=asm_uid,
-            linkname="assembly_nuccore"
+        link_results = Entrez.read(
+            Entrez.elink(
+                dbfrom="assembly", db="nuccore", id=asm_uid, linkname="assembly_nuccore"
+            )
         )
-        link_results = Entrez.read(link_handle)
-        link_handle.close()
-
         linksets = link_results[0].get("LinkSetDb", [])
         if not linksets or not linksets[0].get("Link"):
             raise ValueError(f"No nuccore records linked to assembly '{acc}'.")
         nuccore_ids = [lnk["Id"] for lnk in linksets[0]["Link"]]
 
-        # 3. fetch combined FASTA & GenBank
         ids_csv = ",".join(nuccore_ids)
         fna_records = Entrez.efetch(
             db="nuccore", id=ids_csv, rettype="fasta", retmode="text"
@@ -73,42 +85,34 @@ def download_ncbi(accession: str, email: str):
         ).read()
 
     else:
-        raise ValueError(
-            "Invalid accession prefix. "
-            "Must begin with NC_/NM_/MT_ (nucleotide) or GCF_/GCA_ (assembly)."
-        )
+        raise ValueError("Invalid accession prefix. Use NC_/NM_/MT_ or GCF_/GCA_.")
 
-    # write out fasta (.fna)
-    fna_path = "ncbi_temp.fna"
-    with open(fna_path, "w") as f:
+    with open("ncbi_temp.fna", "w") as f:
         f.write(fna_records)
-
-    # write out GenBank (.gbff)
-    gbff_path = "ncbi_temp.gbff"
-    with open(gbff_path, "w") as f:
+    with open("ncbi_temp.gbff", "w") as f:
         f.write(gb_records)
 
-    # parse proteins from GenBank translations
     proteins = []
-    for rec in SeqIO.parse(gbff_path, "genbank"):
+    for rec in SeqIO.parse("ncbi_temp.gbff", "genbank"):
         for feat in rec.features:
             if feat.type == "CDS" and "translation" in feat.qualifiers:
                 locus = feat.qualifiers.get("locus_tag", ["unknown"])[0]
                 aa_seq = feat.qualifiers["translation"][0]
                 proteins.append(f">{locus}\n{aa_seq}\n")
 
-    faa_path = "ncbi_temp.faa"
-    with open(faa_path, "w") as f:
+    with open("ncbi_temp.faa", "w") as f:
         f.writelines(proteins)
 
-    return fna_path, gbff_path, faa_path
+    return "ncbi_temp.fna", "ncbi_temp.gbff", "ncbi_temp.faa"
 
 
-# UI tabs
-tab1, tab2 = st.tabs(["🔼 Upload files", "🌐 Download from NCBI"])
+# ───────────────────────────────────────────────────────────────
+# Tabs: Upload vs NCBI
+tab1, tab2 = st.tabs(["🔼 Upload Files", "🌐 Fetch from NCBI"])
 
+# ──────────────── Tab 1: Upload ────────────────
 with tab1:
-    st.header("Upload your own files")
+    st.header("Upload Your Genome Files")
     fna_file = st.file_uploader("Genome FASTA (.fna)", type="fna")
     gbff_file = st.file_uploader("GenBank (.gbff)", type="gbff")
     faa_file = st.file_uploader("Protein FASTA (.faa)", type="faa")
@@ -117,11 +121,9 @@ with tab1:
         if not fna_file:
             st.warning("Please upload at least a .fna file.")
         else:
-            # save uploads to temp files
             with open("temp.fna", "wb") as f:
                 f.write(fna_file.getvalue())
-            gb_path = None
-            faa_path = None
+            gb_path = faa_path = None
             if gbff_file:
                 with open("temp.gbff", "wb") as f:
                     f.write(gbff_file.getvalue())
@@ -132,64 +134,97 @@ with tab1:
                 faa_path = "temp.faa"
 
             results = run_analysis("temp.fna", gb_path, faa_path)
-            # display results
-            st.subheader("GC Content per Sequence")
+
+            st.markdown("### 📈 GC Content per Sequence")
             st.dataframe(results["sequence_gc"], use_container_width=True)
+            st.download_button(
+                "📥 Download GC Content per Sequence",
+                results["sequence_gc"].to_csv(index=False).encode("utf-8"),
+                "gc_content_per_sequence.csv",
+                "text/csv",
+            )
             st.pyplot(results["sequence_plot"])
 
             if "gene_gc" in results:
-                st.subheader("GC Content per Gene")
+                st.markdown("### 🧬 GC Content per Gene")
                 st.dataframe(results["gene_gc"], use_container_width=True)
+                st.download_button(
+                    "📥 Download GC Content per Gene",
+                    results["gene_gc"].to_csv(index=False).encode("utf-8"),
+                    "gc_content_per_gene.csv",
+                    "text/csv",
+                )
                 st.pyplot(results["gene_plot"])
 
             if "aa_comp" in results:
-                st.subheader("Amino Acid Composition")
+                st.markdown("### 🔠 Amino Acid Composition")
                 st.dataframe(results["aa_comp"], use_container_width=True)
+                st.download_button(
+                    "📥 Download Amino Acid Composition",
+                    results["aa_comp"].to_csv(index=False).encode("utf-8"),
+                    "amino_acid_composition.csv",
+                    "text/csv",
+                )
                 st.pyplot(results["aa_plot"])
 
+# ──────────────── Tab 2: NCBI ────────────────
 with tab2:
-    st.header("Fetch directly from NCBI")
+    st.header("Download Genome from NCBI")
     acc = st.text_input(
-        "NCBI accession",
-        placeholder="e.g. NC_000913.3 or GCF_001592505.1"
+        "NCBI Accession", placeholder="e.g. NC_000913.3 or GCF_001592505.1"
     )
-    email = st.text_input(
-        "Your email (required by NCBI)",
-        help="NCBI policy requires an email address with each request."
-    )
+    email = st.text_input("Your Email", help="Required by NCBI for data access.")
 
     if st.button("Download & Run Analysis"):
         if not acc or not email:
             st.warning("Both accession and email are required.")
         else:
-            with st.spinner("Downloading and parsing from NCBI..."):
+            with st.spinner("Fetching data from NCBI..."):
                 try:
                     fna_path, gbff_path, faa_path = download_ncbi(acc, email)
                     results = run_analysis(fna_path, gbff_path, faa_path)
                 except Exception as e:
-                    st.error(f"Error fetching data: {e}")
+                    st.error(f"Error: {e}")
                     st.stop()
 
             st.success(f"Results for accession '{acc}':")
-            st.subheader("GC Content per Sequence")
+
+            st.markdown("### 📈 GC Content per Sequence")
             st.dataframe(results["sequence_gc"], use_container_width=True)
+            st.download_button(
+                "📥 Download GC Content per Sequence",
+                results["sequence_gc"].to_csv(index=False).encode("utf-8"),
+                "gc_content_per_sequence.csv",
+                "text/csv",
+            )
             st.pyplot(results["sequence_plot"])
 
             if "gene_gc" in results:
-                st.subheader("GC Content per Gene")
+                st.markdown("### 🧬 GC Content per Gene")
                 st.dataframe(results["gene_gc"], use_container_width=True)
+                st.download_button(
+                    "📥 Download GC Content per Gene",
+                    results["gene_gc"].to_csv(index=False).encode("utf-8"),
+                    "gc_content_per_gene.csv",
+                    "text/csv",
+                )
                 st.pyplot(results["gene_plot"])
 
             if "aa_comp" in results:
-                st.subheader("Amino Acid Composition")
+                st.markdown("### 🔠 Amino Acid Composition")
                 st.dataframe(results["aa_comp"], use_container_width=True)
+                st.download_button(
+                    "📥 Download Amino Acid Composition",
+                    results["aa_comp"].to_csv(index=False).encode("utf-8"),
+                    "amino_acid_composition.csv",
+                    "text/csv",
+                )
                 st.pyplot(results["aa_plot"])
 
 # ───────────────────────────────────────────────────────────────
-# Footer: author credit + links
+# Footer
 st.markdown("---")
-st.markdown("Made by Bruna Gil. Data-driven, clean, and powerful.")
+st.markdown("Made with ❤️ by Bruna Gil — Data-driven, clean, and powerful.")
 st.markdown(
-    "[🔗 GitHub](https://github.com/BrunaGil25) | "
-    "[🔗 LinkedIn](https://www.linkedin.com/in/bruna-gil-garcia-80656069/)"
+    "[🔗 GitHub](https://github.com/BrunaGil25) | [🔗 LinkedIn](https://www.linkedin.com/in/bruna-gil-garcia-80656069/)"
 )
