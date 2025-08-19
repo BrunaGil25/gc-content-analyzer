@@ -66,29 +66,24 @@ gc-content-analyzer/
 Clone the repo and install dependencies:
 
 1. Clone the repository  
-  # ```bash
    git clone https://github.com/BrunaGil25/gc-content-analyzer.git
    cd gc-content-analyzer
 
 2. (Optional) Create and activate a virtual environment
-   #```bash
    python -m venv venv
    source venv/bin/activate   # macOS/Linux
    venv\Scripts\activate      # Windows
 
-4. Install dependencies
-   #```bash   
+4. Install dependencies   
    pip install -r requirements.txt
 
 5. Install pre-commit hooks
-  # ```bash 
   pip install pre-commit
   pre-commit install
 
 ## Usage
 ### Streamlit App
 Launch locally:
-   #```bash
    streamlit run app.py
 
 Or visit the hosted version:
@@ -102,7 +97,6 @@ In the browser:
 ### Jupyter Notebook
 - Place your data files in data/.
 - Launch the notebook:
-   #```bash
    jupyter notebook notebooks/GC_Content_Analyzer.ipynb
 - Run all cells to generate results in results/.
 
@@ -110,13 +104,10 @@ In the browser:
 We welcome improvements!
 - Fork the repo
 - Create a branch:
-   #```bash
    git checkout -b feature/your-feature
 - Make your changes, then run tests:
-   #```bash
    pytest
 - Commit with a clear message:
-   #```bash
    git commit -m "Add feature: description"
 - Push and open a Pull Request.
 
