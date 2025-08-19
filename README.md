@@ -41,7 +41,7 @@ Supports `.fna`, `.gbff`, and `.faa` formats. Offers CSV export, publication-qua
 ---
 
 ## Project Structure
-
+ ```text
 gc-content-analyzer/ 
 ├── src/
 │   └── gc_analysis/          # Core analysis functions
@@ -65,22 +65,26 @@ gc-content-analyzer/
 
 Clone the repo and install dependencies:
 
-1. Clone the repository  
-   git clone https://github.com/BrunaGil25/gc-content-analyzer.git
-   cd gc-content-analyzer
-
+1. Clone the repository
+ ```bash  
+git clone https://github.com/BrunaGil25/gc-content-analyzer.git
+cd gc-content-analyzer
+ ```
 2. (Optional) Create and activate a virtual environment
+ ```bash
    python -m venv venv
    source venv/bin/activate   # macOS/Linux
    venv\Scripts\activate      # Windows
-
-4. Install dependencies   
+ ```
+4. Install dependencies
+    ```bash  
    pip install -r requirements.txt
-
+ ```
 5. Install pre-commit hooks
-  pip install pre-commit
+ ```bash
+pip install pre-commit
   pre-commit install
-
+ ```
 ## Usage
 ### Streamlit App
 Launch locally:
