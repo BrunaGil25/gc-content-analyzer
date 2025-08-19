@@ -97,9 +97,9 @@ In the browser:
 ### Jupyter Notebook
 - Place your data files in data/.
 - Launch the notebook:
-  ```bash
+```bash
    jupyter notebook notebooks/GC_Content_Analyzer.ipynb
-  ```
+```
 - Run all cells to generate results in results/.
 
 ## Contributing
