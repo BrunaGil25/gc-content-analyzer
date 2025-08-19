@@ -23,7 +23,7 @@ Supports `.fna`, `.gbff`, and `.faa` formats. Offers CSV export, publication-qua
   - [Streamlit App](#streamlit-app)  
   - [Jupyter Notebook](#jupyter-notebook)  
 - [Contributing](#contributing)
-- [Ideas for Extension](#Ideas for Extension)
+- [Ideas for Extension](#Ideas-for-extension)
 - [License](#license)  
 - [Author](#author)  
 
