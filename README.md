@@ -1,11 +1,6 @@
 # 🧬 GC Content Analyzer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/BrunaGil25/gc-content-analyzer/blob/main/LICENSE)  
-[![Streamlit App](https://img.shields.io/badge/Streamlit-Live_App-orange.svg)](https://gc-content-analyzer-brunagil.streamlit.app/)  
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/downloads/)  
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen.svg)](https://pre-commit.com/)  
-[![Tests](https://img.shields.io/badge/tests-passing-success.svg)](https://github.com/BrunaGil25/gc-content-analyzer/actions)  
-[![Docs](https://img.shields.io/badge/docs-MkDocs-lightgrey.svg)](https://github.com/BrunaGil25/gc-content-analyzer/tree/main/docs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/BrunaGil25/gc-content-analyzer/blob/main/LICENSE)  [![Streamlit App](https://img.shields.io/badge/Streamlit-Live_App-orange.svg)](https://gc-content-analyzer-brunagil.streamlit.app/)  [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/downloads/)  [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen.svg)](https://pre-commit.com/)  [![Tests](https://img.shields.io/badge/tests-passing-success.svg)](https://github.com/BrunaGil25/gc-content-analyzer/actions)  [![Docs](https://img.shields.io/badge/docs-MkDocs-lightgrey.svg)](https://github.com/BrunaGil25/gc-content-analyzer/tree/main/docs)
 
 A Python toolkit for exploring GC content and amino acid composition from genomic data.  
 Supports `.fna`, `.gbff`, and `.faa` formats. Offers CSV export, publication-quality plots, and an interactive Streamlit interface.
@@ -90,7 +85,7 @@ gc-content-analyzer/
 Launch locally:
  ```bash
    streamlit run app.py
-```
+ ```
 Or visit the hosted version:
 https://gc-content-analyzer-brunagil.streamlit.app/
 In the browser:
@@ -102,7 +97,7 @@ In the browser:
 ### Jupyter Notebook
 - Place your data files in data/.
 - Launch the notebook:
-   ```bash
+  ```bash
    jupyter notebook notebooks/GC_Content_Analyzer.ipynb
   ```
 - Run all cells to generate results in results/.
@@ -111,17 +106,17 @@ In the browser:
 We welcome improvements!
 - Fork the repo
 - Create a branch:
-   ```bash
+ ```bash
    git checkout -b feature/your-feature
-  ```
+```
 - Make your changes, then run tests:
-   ```bash
+ ```bash
    pytest
-  ```
+ ```
 - Commit with a clear message:
-   ```bash
+ ```bash
    git commit -m "Add feature: description"
-  ```
+ ```
 - Push and open a Pull Request.
 
 Please follow the existing code style and ensure all linting/tests pass via pre-commit hooks.
