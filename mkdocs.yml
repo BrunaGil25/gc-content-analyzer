@@ -1,0 +1,9 @@
+site_name: GC Content Analyzer
+repo_url: https://github.com/BrunaGil25/gc-content-analyzer
+
+theme:
+  name: material
+nav:
+  - Home: index.md
+  # - Usage: usage.md
+  # - API Reference: api.md

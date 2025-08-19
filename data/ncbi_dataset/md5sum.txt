@@ -1,0 +1,9 @@
+109f0a36e5db00774135c8dde0749137  ncbi_dataset/data/data_summary.tsv
+6c3f15ef5e8fcec3c3d0714ac726ec65  ncbi_dataset/data/assembly_data_report.jsonl
+363a6546c9e247c57549e41422af0349  ncbi_dataset/data/GCA_000005845.2/genomic.gbff
+b62abb256585725bb26065df188f355b  ncbi_dataset/data/GCA_000005845.2/GCA_000005845.2_ASM584v2_genomic.fna
+40778d977e5465f7717f8239ec29931d  ncbi_dataset/data/GCA_000005845.2/protein.faa
+bbad3392b017fb80181947de8e5add1b  ncbi_dataset/data/GCF_000005845.2/genomic.gbff
+92c997bcd88e983ffdb21b2712ed3736  ncbi_dataset/data/GCF_000005845.2/GCF_000005845.2_ASM584v2_genomic.fna
+0fc9b8a1f60da0fa350e18b62e6bc6cd  ncbi_dataset/data/GCF_000005845.2/protein.faa
+c413cfd592130a9d752f0b32fe6e52fc  ncbi_dataset/data/dataset_catalog.json

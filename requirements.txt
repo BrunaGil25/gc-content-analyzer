@@ -1,0 +1,8 @@
+```txt
+biopython
+pandas
+matplotlib
+seaborn
+streamlit
+jupyter
+

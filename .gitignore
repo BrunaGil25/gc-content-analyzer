@@ -1,0 +1,8 @@
+# Byte‐compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+*.sqlite3
+.DS_Store
+.ipynb_checkpoints/
